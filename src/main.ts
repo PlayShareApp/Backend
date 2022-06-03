@@ -1,13 +1,14 @@
 import express from 'express';
 import dotenv from 'dotenv'
+import cors from 'cors';
 import SocketController from '../ws/socket';
 import logUtils from '../utils/logUtils';
 
 dotenv.config()
 
 const app = express();
+app.use(cors());
 const socketController = new SocketController();
-
 
 app.locals.socketController = socketController;
 

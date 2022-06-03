@@ -16,6 +16,8 @@ router.post('/', async (req: express.Request, res: express.Response) => {
     if(socketController.wsGetRoom(req.headers.room_id).users.includes(req.headers.user_id)) return res.json(returnUtils.returnHTTPErrUserAlreadyInRoom()); // Check if user is already in room
 
     try {
+        console.log("User joined a room.");
+        
         // Check if userid is part of socketController.connections
         if(!socketController.partOfConnection(req.headers.user_id)) return res.json(returnUtils.returnHTTPErrUserNotGenerated());
 
