@@ -17,6 +17,7 @@ router.post('/', async (req: express.Request, res: express.Response) => {
 
     try {
         console.log("User joined a room.");
+        console.log(req.headers.user_id);
         
         // Check if userid is part of socketController.connections
         if(!socketController.partOfConnection(req.headers.user_id)) return res.json(returnUtils.returnHTTPErrUserNotGenerated());
