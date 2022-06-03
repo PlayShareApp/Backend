@@ -21,14 +21,15 @@ exampleSocket.onmessage = (event) => {
 
 | ID | METHOD_NAME | PARAMS |
 | -- | ----------- | ---------------------- |
-| -1 | VIDEO_CHANGE | N/A |
-| 0 | VIDEO_END | N/A |
-| 1 | PLAY | N/A |
-| 2 | PAUSE | N/A |
-| 3 | BUFFERING | ex. new Timestamp to be sent to Client |
-| 1010 | HELLO_WORLD | {id} |
-| 1002 | JOIN_ROOM | {NEW_USER, } |
-| 1003 | JOIN_ROOM_SUCCESS | {ROOM_ID } |
+| -1 | VIDEO_CHANGE | { CHANGE_USER } |
+| 0 | VIDEO_END | { CHANGE_USER } |
+| 1 | PLAY | { CHANGE_USER } |
+| 2 | PAUSE | { CHANGE_USER } |
+| 3 | BUFFERING | { TIME, CHANGE_USER } |
+| 1010 | HELLO_WORLD | { id } |
+| 1002 | JOIN_ROOM | { NEW_USER } |
+| 1003 | JOIN_ROOM_SUCCESS | { ROOM_ID } |
+| 1004 | CHANGE_USER_NAME | { USER, NEW_USER_NAME } |
 
 
 ## VIDEO CHANGE
@@ -40,7 +41,7 @@ Gets send to Client when a User succesfully calls the Video Change Route.
 {
 "ID": -1,
 "METHOD_NAME": "VIDEO_CHANGE",
-"PARAMS": {}
+"PARAMS": {"CHANGE_USER": "58652229-dc4f-4aed-8396-51042ecdc564"}
 }
 ```
 
@@ -66,7 +67,7 @@ Gets send to Client when a User succesfully calls the Video PLAY/PAUSE Route.
 {
 "ID": 1,
 "METHOD_NAME": "PLAY",
-"PARAMS": {}
+"PARAMS": {"CHANGE_USER": "58652229-dc4f-4aed-8396-51042ecdc564"}
 }
 ```
 
@@ -79,7 +80,7 @@ Gets send to Client when a User succesfully calls the Video PLAY/PAUSE Route.
 {
 "ID": 2,
 "METHOD_NAME": "PAUSE",
-"PARAMS": {}
+"PARAMS": {"CHANGE_USER": "58652229-dc4f-4aed-8396-51042ecdc564"}
 }
 ```
 
@@ -138,6 +139,22 @@ Gets send to Client from Server to Inform the client about succesfully joining a
 "METHOD_NAME": "JOIN_ROOM_SUCCESS",
 "PARAMS": {
     "ROOM_ID": "178ccba1-e03c-4f8b-b5df-e77c3f69834d"
+    }
+}
+```
+
+## CHANGE USER NAME
+### **Description**
+Gets send to Client from Server to Inform the client about succesfully joining a room.
+
+### Example
+```json
+{
+"ID": 1003,
+"METHOD_NAME": "CHANGE_USER_NAME",
+"PARAMS": {
+    "USER": "58652229-dc4f-4aed-8396-51042ecdc564",
+    "NEW_USER_NAME": "aph"
     }
 }
 ```

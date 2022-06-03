@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
 
     try {        
         // Convert URL to video ID if needed
-        socketController.wsChangeVideo(req.headers.room_id, req.headers.video_id);
+        socketController.wsChangeVideo(req.headers.room_id, req.headers.user_id, req.headers.video_id);
         return res.json(returnUtils.returnHTTPSuc());
         
     } catch (error) {

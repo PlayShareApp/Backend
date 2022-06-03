@@ -111,11 +111,11 @@ export default class SocketController {
      * @param room_id 
      * @param video_id 
      */
-    public wsChangeVideo(room_id: string, video_id: string): void {
+    public wsChangeVideo(room_id: string, change_user:string, video_id: string): void {
         let users: Array<any> = this.Room[room_id].users
 
         users.forEach(user => {
-            connections[user].send(returnUtils.returnWS(-1, "CHANGE_VIDEO", { "VIDEO_ID": video_id }));
+            connections[user].send(returnUtils.returnWS(-1, "CHANGE_VIDEO", { "VIDEO_ID": video_id, "CHANGE_BY": change_user }));
         })
     }
 
@@ -125,7 +125,7 @@ export default class SocketController {
      * @param room_id 
      * @param paused Wether or not the Video is paused
      */
-    public wsChangeState(room_id: string, paused: Boolean) {
+    public wsChangeState(room_id: string, change_user:string,  paused: Boolean) {
         let users: Array<any> = this.Room[room_id].users
 
         // Create Response
@@ -133,11 +133,11 @@ export default class SocketController {
         switch (paused) {
             case true:
                 console.log("Paused");
-                response = returnUtils.returnWS(2, "PAUSE", {});
+                response = returnUtils.returnWS(2, "PAUSE", {"CHANGE_BY": change_user});
                 break;
             case false:
                 console.log("Play");
-                response = returnUtils.returnWS(1, "PLAY", {});
+                response = returnUtils.returnWS(1, "PLAY", {"CHANGE_BY": change_user});
                 break
         }
 
@@ -153,13 +153,23 @@ export default class SocketController {
      * @param room_id 
      * @param time 
      */
-    public wsChangeTime(room_id: string, time: Number) {
+    public wsChangeTime(room_id: string, change_user:string, time: Number) {
         let users: Array<any> = this.Room[room_id].users
 
         // Create Response
         let response: string;
         users.forEach(user => {
-            connections[user].send(returnUtils.returnWS(3, "CHANGE_TIME", { "TIME": time }));
+            connections[user].send(returnUtils.returnWS(3, "CHANGE_TIME", { "TIME": time, "CHANGE_BY": change_user }));
+        })
+    }
+
+    public wsUserChangedName(room_id: string, change_user: string, new_name: string){
+        let users: Array<any> = this.Room[room_id].users
+
+        // Create Response
+        let response: string;
+        users.forEach(user => {
+            connections[user].send(returnUtils.returnWS(3, "CHANGE_TIME", { "USER": change_user, "NEW_USER_NAME": new_name }));
         })
     }
 }

@@ -9,12 +9,17 @@ const router = express.Router();
 
 router.post('/', async (req, res) => {
     let socketController = req.app.locals.socketController;
-    if(!req.headers.room_id || !req.headers.user_id || !req.headers.time) return res.json(returnUtils.returnHTTPErrMissingHeader()); // Missing headers
+    if(!req.headers.room_id || !req.headers.user_id || !req.headers.new_user) return res.json(returnUtils.returnHTTPErrMissingHeader()); // Missing headers
     if(!socketController.wsGetRoom(req.headers.room_id)) return res.json(returnUtils.returnHTTPErrRoomDoesNotExist()); // Check if room exists
     if(!socketController.wsGetRoom(req.headers.room_id).users.includes(req.headers.user_id)) return res.json(returnUtils.returnHTTPErrUserNotInRoom()); // Check if user is in room
 
-    try {
-        socketController.wsChangeTime(req.headers.room_id, req.headers.user_id,  req.headers.time);
+    try {        
+
+        // Save username to userid
+        
+
+        // Convert URL to video ID if needed
+        socketController.wsUserChangedName(req.headers.room_id, req.headers.user_id, req.headers.new_user);
         return res.json(returnUtils.returnHTTPSuc());
         
     } catch (error) {

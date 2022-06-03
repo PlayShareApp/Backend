@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
         if(!socketController.wsGetRoom(req.headers.room_id)) return res.json(returnUtils.returnHTTPErrRoomDoesNotExist()); // Check if room exists
         if(!socketController.wsGetRoom(req.headers.room_id).users.includes(req.headers.user_id)) return res.json(returnUtils.returnHTTPErrUserNotInRoom()); // Check if user is in room
 
-        socketController.wsChangeState(req.headers.room_id, req.headers.state == "true" ? true : false);
+        socketController.wsChangeState(req.headers.room_id, req.headers.user_id, req.headers.state == "true" ? true : false);
 
         return res.json(returnUtils.returnHTTPSuc());
     } catch (error) {
