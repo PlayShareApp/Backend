@@ -62,10 +62,13 @@ export default class SocketController {
     public wsJoinRoom(roomID: string, userID: string): void {
         this.Room[roomID].users.push(userID);
 
+        // Send Response to User that they have joined the Room
         connections[userID].send(returnUtils.returnWS(1003, "JOIN_ROOM_SUCCESS", { "ROOM_ID": roomID }));
 
-        [connections[userID]].forEach(user => {
-            user.send(returnUtils.returnWS(1002, "JOIN_ROOM", { "NEW_USER": userID }));
+        // Inform all Users in the Room that a new User has joined
+        let users: Array<any> = this.Room[roomID].users;
+        users.forEach(user => {
+            connections[user].send(returnUtils.returnWS(1002, "JOIN_ROOM", { "NEW_USER": userID }));
         })
     }
 
