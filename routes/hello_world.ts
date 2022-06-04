@@ -12,7 +12,7 @@ router.all('/', async (req, res) => {
     try {
         let socketController = req.app.locals.socketController;
     
-        res.send(socketController.Room);
+        res.send(socketController.getRoom);
     } catch (error) {
         let errID = uuidv4();
         logUtils.ErrorLog(errID , error);

@@ -9,6 +9,7 @@ dotenv.config()
 const wss = new WebSocket.Server({ port: Number(process.env.WS_PORT) });
 
 var connections: any = [];
+var Room: any = {};
 
 wss.on('connection', function connection(ws: any) {
     // Keep track of Session
@@ -21,56 +22,47 @@ wss.on('connection', function connection(ws: any) {
 
     // Detect if Client Disconnectes and remove ID from Array
     ws.on('close', () => {
-        console.log("Closed Session with Session ID " + ws.id);
-        logUtils.logCustom("WS", "Closed Session with Session ID " + ws.id);
+        try {
+            logUtils.logCustom("WS", "Closed Session with Session ID " + ws.id);
+            
+            // Remove ws.id from Room
+            Object.keys(Room).forEach(key => {
+                Room[key].users = (Room[key].users).filter((e: any) => e !== ws.id)
+            });
+
+            delete connections[ws.id];
+        } catch (error) {
+            console.log(error);
+            
+        }
         delete connections[ws.id];
     })
 });
 
-export interface SocketControllerInterface {
-    createSocket(): void;
-    wsJoinRoom(roomID: string, userID: string): void;
-    wsGetRoom(roomID: string): any;
-    wsCreateRoom(roomID: string, userID: string): void;
-    wsChangeVideo(roomID: string, userID: string, videoID: string): void;
-}
 
-export default class SocketController {
-
-    private Room: any = {};
-    public Connections: any = [];
-
-    /**
-     * @name createSocket
-     * @description Creates a websocket server
-     * @returns {void}
-     * @memberof SocketController
-     * @public
-     * 
-     * When User enters a Room, the User will connect to the Socket Server and receive a unique UserID.
-     * User will then call a HTTP Router to enter a Room. If the Room does not exist, the Router will create a new Room.
-     * If the Room does exist, the User will get assigned to the Room.
-     */
-
-
+export default {
     /**
      * @name wsJoinRoom
      * @description Adds a User to a Room
      * @param roomID RoomID
      * @param userID userID
      */
-    public wsJoinRoom(roomID: string, userID: string): void {
-        this.Room[roomID].users.push(userID);
+    wsJoinRoom(roomID: string, userID: string): void {
+        Room[roomID].users.push(userID);
 
         // Send Response to User that they have joined the Room
         connections[userID].send(returnUtils.returnWS(1003, "JOIN_ROOM_SUCCESS", { "ROOM_ID": roomID }));
 
         // Inform all Users in the Room that a new User has joined
-        let users: Array<any> = this.Room[roomID].users;
+        let users: Array<any> = Room[roomID].users;
         users.forEach(user => {
             connections[user].send(returnUtils.returnWS(1002, "JOIN_ROOM", { "NEW_USER": userID }));
         })
-    }
+    },
+
+    get getRoom(){
+        return Room;
+    },
 
     /**
      * @name partOfConnection
@@ -78,9 +70,9 @@ export default class SocketController {
      * @param userID
      * @returns {Boolean}
      */
-    public partOfConnection(userID: string): boolean {
+    partOfConnection(userID: string): boolean {
         return Object.keys(connections).includes(userID);
-    }
+    },
 
     /**
      * @name wsGetRoom
@@ -89,24 +81,24 @@ export default class SocketController {
      * @returns {Object} Room
      * @deprecated I have no Idea if this is needed.
      */
-    public wsGetRoom(RoomID: string): Object {
-        return this.Room[RoomID];
-    }
+    wsGetRoom(RoomID: string): Object {
+        return Room[RoomID];
+    },
 
     /**
      * @name wsCreateRoom
      * @description Creates a Room
      * @returns Object with RoomID and UserID
      */
-    public wsCreateRoom(): Object {
+    wsCreateRoom(): Object {
         let id = uuidv4();
-        this.Room[id] = {
+        Room[id] = {
             roomID: id,
             users: [],
         }
 
-        return this.Room[id];
-    }
+        return Room[id];
+    },
 
     /**
      * @name wsChangeVideo
@@ -114,13 +106,13 @@ export default class SocketController {
      * @param room_id 
      * @param video_id 
      */
-    public wsChangeVideo(room_id: string, change_user:string, video_id: string): void {
-        let users: Array<any> = this.Room[room_id].users
+    wsChangeVideo(room_id: string, change_user:string, video_id: string): void {
+        let users: Array<any> = Room[room_id].users
 
         users.forEach(user => {
             connections[user].send(returnUtils.returnWS(-1, "CHANGE_VIDEO", { "VIDEO_ID": video_id, "CHANGE_BY": change_user }));
         })
-    }
+    },
 
     /**
      * @name wsChangeState
@@ -128,7 +120,7 @@ export default class SocketController {
      * @param room_id 
      * @param paused Wether or not the Video is paused
      */
-    public wsChangeState(room_id: string, change_user:string,  paused: Boolean) {
+    wsChangeState(room_id: string, change_user:string,  paused: Boolean) {
         // Create Response
         let response: string;
         switch (paused) {
@@ -143,11 +135,11 @@ export default class SocketController {
         }
 
         // Inform all Users in the Room to Change State
-        let users: Array<any> = this.Room[room_id].users;
+        let users: Array<any> = Room[room_id].users;
         users.forEach(user => {
             connections[user].send(response);
         })
-    }
+    },
 
     /**
      * @name wsChangeTime
@@ -155,18 +147,18 @@ export default class SocketController {
      * @param room_id 
      * @param time 
      */
-    public wsChangeTime(room_id: string, change_user:string, time: Number) {
-        let users: Array<any> = this.Room[room_id].users
+    wsChangeTime(room_id: string, change_user:string, time: Number) {
+        let users: Array<any> = Room[room_id].users
 
         // Create Response
         let response: string;
         users.forEach(user => {
             connections[user].send(returnUtils.returnWS(3, "CHANGE_TIME", { "TIME": time, "CHANGE_BY": change_user }));
         })
-    }
+    },
 
-    public wsUserChangedName(room_id: string, change_user: string, new_name: string){
-        let users: Array<any> = this.Room[room_id].users
+    wsUserChangedName(room_id: string, change_user: string, new_name: string){
+        let users: Array<any> = Room[room_id].users
 
         // Create Response
         let response: string;

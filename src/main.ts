@@ -8,9 +8,8 @@ dotenv.config()
 
 const app = express();
 app.use(cors());
-const socketController = new SocketController();
 
-app.locals.socketController = socketController;
+app.locals.socketController = SocketController;
 
 // Index
 app.use('/', require('../routes/hello_world')) // im gonna kill myself
