@@ -129,8 +129,6 @@ export default class SocketController {
      * @param paused Wether or not the Video is paused
      */
     public wsChangeState(room_id: string, change_user:string,  paused: Boolean) {
-        let users: Array<any> = this.Room[room_id].users
-
         // Create Response
         let response: string;
         switch (paused) {
@@ -144,7 +142,8 @@ export default class SocketController {
                 break
         }
 
-        // Send Response
+        // Inform all Users in the Room to Change State
+        let users: Array<any> = this.Room[room_id].users;
         users.forEach(user => {
             connections[user].send(response);
         })
