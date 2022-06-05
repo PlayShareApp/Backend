@@ -125,11 +125,9 @@ export default {
         let response: string;
         switch (paused) {
             case true:
-                console.log("Paused");
                 response = returnUtils.returnWS(2, "PAUSE", {"CHANGE_BY": change_user});
                 break;
             case false:
-                console.log("Play");
                 response = returnUtils.returnWS(1, "PLAY", {"CHANGE_BY": change_user});
                 break
         }
