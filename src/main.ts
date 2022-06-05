@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv'
 import cors from 'cors';
+import path from 'path';
 import SocketController from '../ws/socket';
 import logUtils from '../utils/logUtils';
 
@@ -8,11 +9,16 @@ dotenv.config()
 
 const app = express();
 app.use(cors());
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.locals.socketController = SocketController;
 
 // Index
-app.use('/', require('../routes/hello_world')) // im gonna kill myself
+app.get("/*", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+//app.use('/', require('../routes/hello_world')) // im gonna kill myself
 app.use('/a/create_r', require('../routes/create_room')) // Implemented
 app.use('/a/join_r', require('../routes/join_room')) // Implemented
 app.use('/a/change_v', require('../routes/change_video')) // Implemented but TODO
