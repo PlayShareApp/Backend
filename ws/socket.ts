@@ -51,7 +51,7 @@ export default {
         Room[roomID].users.push(userID);
 
         // Send Response to User that they have joined the Room
-        connections[userID].send(returnUtils.returnWS(1003, "JOIN_ROOM_SUCCESS", { "ROOM_ID": roomID }));
+        connections[userID].send(returnUtils.returnWS(1003, "JOIN_ROOM_SUCCESS", { "ROOM_ID": roomID, "CURRENT_VIDEO": Room[roomID].params.current_video, "TIME": Room[roomID].params.time, "STATE": Room[roomID].params.state }));
 
         // Inform all Users in the Room that a new User has joined
         let users: Array<any> = Room[roomID].users;

@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default {
     returnWS: (ID: number, METHOD_NAME: string, PARAMS: Object): string => {
+        console.log(PARAMS)
         return JSON.stringify({
             "ID": ID,
             "METHOD_NAME": METHOD_NAME,
