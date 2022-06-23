@@ -98,6 +98,7 @@ export default {
             params: {
                 "current_video": "",
                 "time": 0,
+                "state": false,
             }
         }
 
@@ -113,6 +114,8 @@ export default {
     wsChangeVideo(room_id: string, change_user:string, video_id: string): void {
         let users: Array<any> = Room[room_id].users
 
+        Room[room_id].params.current_video = video_id;
+
         users.forEach(user => {
             connections[user].send(returnUtils.returnWS(-1, "CHANGE_VIDEO", { "VIDEO_ID": video_id, "CHANGE_BY": change_user }));
         })
@@ -125,6 +128,9 @@ export default {
      * @param paused Wether or not the Video is paused
      */
     wsChangeState(room_id: string, change_user:string,  paused: Boolean) {
+
+        Room[room_id].params.state = paused;
+
         // Create Response
         let response: string;
         switch (paused) {
@@ -151,6 +157,8 @@ export default {
      */
     wsChangeTime(room_id: string, change_user:string, time: Number) {
         let users: Array<any> = Room[room_id].users
+
+        Room[room_id].params.time = time;
 
         // Create Response
         let response: string;
