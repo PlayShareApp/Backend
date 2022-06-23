@@ -95,6 +95,10 @@ export default {
         Room[id] = {
             roomID: id,
             users: [],
+            params: {
+                "current_video": "",
+                "time": 0,
+            }
         }
 
         return Room[id];
