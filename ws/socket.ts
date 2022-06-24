@@ -5,8 +5,33 @@ import dotenv from 'dotenv'
 import logUtils from '../utils/logUtils';
 dotenv.config()
 
-
 const wss = new WebSocket.Server({ port: Number(process.env.WS_PORT) });
+
+// export interface
+export interface socket {
+    wsJoinRoom: void
+    getRoom: Room
+    partOfConnection: void
+    wsGetRoom: Object
+    wsCreateRoom: Room
+    wsChangeVideo: void
+    wsChangeState: void
+    wsChangeTime: void
+    wsUserChangedName: void
+
+} 
+
+export interface Room {
+    roomID: String
+    user: Array<String>
+    params: RoomParams
+}
+
+interface RoomParams {
+    current_video: string
+    time: Number
+    state: Boolean
+}
 
 var connections: any = [];
 var Room: any = {};
@@ -60,7 +85,7 @@ export default {
         })
     },
 
-    get getRoom(){
+    get getRoom() {
         return Room;
     },
 
@@ -111,7 +136,7 @@ export default {
      * @param room_id 
      * @param video_id 
      */
-    wsChangeVideo(room_id: string, change_user:string, video_id: string): void {
+     wsChangeVideo(room_id: string, change_user:string, video_id: string): void {
         let users: Array<any> = Room[room_id].users
 
         Room[room_id].params.current_video = video_id;
@@ -127,7 +152,7 @@ export default {
      * @param room_id 
      * @param paused Wether or not the Video is paused
      */
-    wsChangeState(room_id: string, change_user:string,  paused: Boolean) {
+    wsChangeState(room_id: string, change_user:string,  paused: Boolean): void {
 
         Room[room_id].params.state = paused;
 
@@ -155,7 +180,7 @@ export default {
      * @param room_id 
      * @param time 
      */
-    wsChangeTime(room_id: string, change_user:string, time: Number) {
+    wsChangeTime(room_id: string, change_user:string, time: Number): void {
         let users: Array<any> = Room[room_id].users
 
         Room[room_id].params.time = time;
@@ -167,7 +192,7 @@ export default {
         })
     },
 
-    wsUserChangedName(room_id: string, change_user: string, new_name: string){
+    wsUserChangedName(room_id: string, change_user: string, new_name: string): void{
         let users: Array<any> = Room[room_id].users
 
         // Create Response
