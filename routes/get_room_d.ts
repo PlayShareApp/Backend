@@ -8,10 +8,9 @@ import { Room, socket } from '../ws/socket';
 // Instances
 const router = express.Router();
 
-router.all('/', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         let socketController = req.app.locals.socketController;
-        let room: any = socketController
 
         // Error checking
         if (!req.headers.room_id) return res.json(returnUtils.returnHTTPErrMissingHeader()); // Missing headers
